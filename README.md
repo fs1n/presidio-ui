@@ -15,6 +15,9 @@ The UI requires running Presidio's analyzer and anonymizer services. You can
 start them using Docker:
 
 ```bash
+docker pull mcr.microsoft.com/presidio-analyzer
+docker pull mcr.microsoft.com/presidio-anonymizer
+
 docker run -p 5002:5002 ghcr.io/microsoft/presidio-analyzer:latest
 docker run -p 5001:5001 ghcr.io/microsoft/presidio-anonymizer:latest
 ```
