@@ -35,7 +35,8 @@ This repository provides a minimal PHP web interface for text anonymization usin
 3. **Run Presidio via Docker**
 
    ```bash
-   docker run -p 5002:5002 ghcr.io/microsoft/presidio-anonymizer:latest
+   docker run -p 5002:5002 ghcr.io/microsoft/presidio-analyzer:latest
+   docker run -p 5001:5001 ghcr.io/microsoft/presidio-anonymizer:latest
    ```
 
    By default the app expects the analyzer on `http://localhost:5002` and the anonymizer on `http://localhost:5001`.
