@@ -9,47 +9,67 @@ This repository provides a minimal PHP web interface for text anonymization usin
 - Configurable Presidio Analyzer and Anonymizer endpoints via `.env`
 - Basic error handling and clean code structure
 
-## Getting Started
+## Quick Start
 
-### Requirements
+The UI requires running Presidio's analyzer and anonymizer services. You can
+start them using Docker:
 
-- PHP 8.1+ and Composer
-- Docker (for running Presidio locally)
+```bash
+docker run -p 5002:5002 ghcr.io/microsoft/presidio-analyzer:latest
+docker run -p 5001:5001 ghcr.io/microsoft/presidio-anonymizer:latest
+```
 
-### Setup
+### Docker `run`
 
-1. **Install dependencies**
+Build and run the UI container directly:
 
-   ```bash
-   composer install
-   ```
+```bash
+docker build -t presidio-ui .
+docker run -p 8080:8080 \
+  -e PRESIDIO_ANALYZER_API_URL=http://localhost:5002 \
+  -e PRESIDIO_ANONYMIZER_API_URL=http://localhost:5001 \
+  presidio-ui
+```
 
-2. **Copy the environment template**
+### Docker Compose
 
-   ```bash
-   cp .env.example .env
-   ```
+Alternatively use `docker-compose` which exposes the same environment
+variables:
 
-   Edit `.env` to set `PRESIDIO_ANALYZER_API_URL` and `PRESIDIO_ANONYMIZER_API_URL` (and API keys if needed).
+```bash
+docker-compose up --build
+```
 
-3. **Run Presidio via Docker**
+The application will then be available on [http://localhost:8080](http://localhost:8080).
 
-   ```bash
-   docker run -p 5002:5002 ghcr.io/microsoft/presidio-analyzer:latest
-   docker run -p 5001:5001 ghcr.io/microsoft/presidio-anonymizer:latest
-   ```
+## Environment Variables
 
-   By default the app expects the analyzer on `http://localhost:5002` and the anonymizer on `http://localhost:5001`.
+The container recognizes the following variables which can also be placed in a
+`.env` file or passed via `docker run -e`/`docker-compose`:
 
-4. **Start the PHP development server**
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `8080` | Port the container listens on |
+| `PRESIDIO_ANALYZER_API_URL` | `http://localhost:5002` | URL of the Presidio analyzer service |
+| `PRESIDIO_ANALYZER_API_KEY` | *(empty)* | Optional API key for analyzer |
+| `PRESIDIO_ANONYMIZER_API_URL` | `http://localhost:5001` | URL of the Presidio anonymizer service |
+| `PRESIDIO_ANONYMIZER_API_KEY` | *(empty)* | Optional API key for anonymizer |
 
-   ```bash
-   php -S localhost:8000 -t public
-   ```
+## Build Instructions
 
-5. **Open the application**
+Build the container for the current architecture:
 
-   Navigate to [http://localhost:8000](http://localhost:8000) in your browser.
+```bash
+docker build -t presidio-ui .
+```
+
+To create a multi-architecture image (e.g., `amd64` and `arm64`) use Docker
+Buildx:
+
+```bash
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -t presidio-ui:latest .
+```
 
 ## Usage
 

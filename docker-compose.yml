@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  presidio-ui:
+    build: .
+    image: presidio-ui:latest
+    ports:
+      - "${PORT:-8080}:8080"
+    environment:
+      PORT: 8080
+      PRESIDIO_ANALYZER_API_URL: ${PRESIDIO_ANALYZER_API_URL:-http://localhost:5002}
+      PRESIDIO_ANALYZER_API_KEY: ${PRESIDIO_ANALYZER_API_KEY:-}
+      PRESIDIO_ANONYMIZER_API_URL: ${PRESIDIO_ANONYMIZER_API_URL:-http://localhost:5001}
+      PRESIDIO_ANONYMIZER_API_KEY: ${PRESIDIO_ANONYMIZER_API_KEY:-}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 5s
+      start_period: 5s
+      retries: 3
