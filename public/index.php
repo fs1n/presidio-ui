@@ -9,9 +9,11 @@ if (file_exists(__DIR__ . '/../.env')) {
     Dotenv::createImmutable(__DIR__ . '/../')->load();
 }
 
-$apiUrl = $_ENV['PRESIDIO_API_URL'] ?? 'http://localhost:5002';
-$apiKey = $_ENV['PRESIDIO_API_KEY'] ?? null;
-$client = new PresidioClient($apiUrl, $apiKey);
+$analyzerUrl = $_ENV['PRESIDIO_ANALYZER_API_URL'] ?? 'http://localhost:5002';
+$anonymizerUrl = $_ENV['PRESIDIO_ANONYMIZER_API_URL'] ?? 'http://localhost:5001';
+$analyzerKey = $_ENV['PRESIDIO_ANALYZER_API_KEY'] ?? null;
+$anonymizerKey = $_ENV['PRESIDIO_ANONYMIZER_API_KEY'] ?? null;
+$client = new PresidioClient($analyzerUrl, $anonymizerUrl, $analyzerKey, $anonymizerKey);
 
 $error = null;
 $output = '';
@@ -27,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!empty($_POST['score'])) {
             $options['score_threshold'] = (float) $_POST['score'];
         }
-        $output = $client->anonymize($input, $options);
+        $output = $client->analyzeAndAnonymize($input, $options);
     } catch (Exception $e) {
         $error = 'Error communicating with Presidio: ' . $e->getMessage();
     }
@@ -55,13 +57,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <div class="col-md-6">
                 <div class="mb-3">
                   <label class="form-label">Input Text</label>
-                  <textarea name="input_text" class="form-control" rows="10"><?= htmlspecialchars($input) ?></textarea>
+                  <textarea name="input_text" class="form-control" rows="10" style="min-height:200px;"><?= htmlspecialchars($input) ?></textarea>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="mb-3">
                   <label class="form-label">Anonymized Output</label>
-                  <textarea class="form-control" rows="10" readonly><?= htmlspecialchars($output) ?></textarea>
+                  <textarea class="form-control" rows="10" style="min-height:200px;" readonly><?= htmlspecialchars($output) ?></textarea>
                 </div>
               </div>
             </div>
@@ -88,6 +90,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
         </form>
       </div>
+      <footer class="footer footer-transparent mt-3">
+        <div class="container-xl text-center">
+          Made with <a href="https://tabler.io" target="_blank" rel="noopener noreferrer">Tabler</a>
+        </div>
+      </footer>
     </div>
   </body>
 </html>
