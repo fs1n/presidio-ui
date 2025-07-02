@@ -92,10 +92,16 @@ class PresidioClient
         ]);
 
         $result = json_decode($response->getBody()->getContents(), true);
-        if (isset($result['text'])) {
-            return $result['text'];
-        }
-        return $result['result'] ?? '';
+        return $result['text'] ?? '';
+    }
+
+    /**
+     * Convenience method to analyze and immediately anonymize text.
+     */
+    public function analyzeAndAnonymize(string $text, array $options = []): string
+    {
+        $analysis = $this->analyze($text, $options);
+        return $this->anonymize($text, $analysis);
     }
 
     /**

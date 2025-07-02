@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
       <footer class="footer footer-transparent mt-3">
         <div class="container-xl text-center">
-          Made with <a href="https://tabler.io" target="_blank">Tabler</a>
+          UI Made with <a href="https://tabler.io" target="_blank" rel="noopener noreferrer">Tabler</a>
         </div>
       </footer>
     </div>
