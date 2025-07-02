@@ -103,13 +103,4 @@ class PresidioClient
         $analysis = $this->analyze($text, $options);
         return $this->anonymize($text, $analysis);
     }
-
-    /**
-     * Convenience method to analyze and immediately anonymize text.
-     */
-    public function analyzeAndAnonymize(string $text, array $options = []): string
-    {
-        $analysis = $this->analyze($text, $options);
-        return $this->anonymize($text, $analysis);
-    }
 }

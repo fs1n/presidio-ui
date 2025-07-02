@@ -24,10 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $options = [];
         // Pass additional options from form
         if (!empty($_POST['entities'])) {
-            $options['entities'] = array_map('trim', explode(',', $_POST['entities']));
+            $entities = array_map('trim', explode(',', $_POST['entities']));
+            $options['entities'] = array_filter($entities, static fn($e) => $e !== '');
         }
-        if (!empty($_POST['score'])) {
-            $options['score_threshold'] = (float) $_POST['score'];
+        if (isset($_POST['score']) && is_numeric(trim($_POST['score']))) {
+            $options['score_threshold'] = (float) trim($_POST['score']);
         }
         $output = $client->analyzeAndAnonymize($input, $options);
     } catch (Exception $e) {
