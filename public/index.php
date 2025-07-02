@@ -20,7 +20,7 @@ $input = $_POST['input_text'] ?? '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $options = [];
-        // Example: pass additional options from form (not fully implemented)
+        // Pass additional options from form
         if (!empty($_POST['entities'])) {
             $options['entities'] = array_map('trim', explode(',', $_POST['entities']));
         }
