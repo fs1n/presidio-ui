@@ -6,7 +6,7 @@ This repository provides a minimal PHP web interface for text anonymization usin
 
 - Side‑by‑side text areas for input and anonymized output
 - Optional advanced settings panel to pass entity types and score threshold
-- Configurable Presidio API endpoint via `.env`
+- Configurable Presidio Analyzer and Anonymizer endpoints via `.env`
 - Basic error handling and clean code structure
 
 ## Getting Started
@@ -30,15 +30,16 @@ This repository provides a minimal PHP web interface for text anonymization usin
    cp .env.example .env
    ```
 
-   Edit `.env` to set `PRESIDIO_API_URL` (and `PRESIDIO_API_KEY` if needed).
+   Edit `.env` to set `PRESIDIO_ANALYZER_API_URL` and `PRESIDIO_ANONYMIZER_API_URL` (and API keys if needed).
 
 3. **Run Presidio via Docker**
 
    ```bash
-   docker run -p 5002:5002 ghcr.io/microsoft/presidio-anonymizer:latest
+   docker run -p 5002:5002 ghcr.io/microsoft/presidio-analyzer:latest
+   docker run -p 5001:5001 ghcr.io/microsoft/presidio-anonymizer:latest
    ```
 
-   By default the app expects Presidio on `http://localhost:5002`.
+   By default the app expects the analyzer on `http://localhost:5002` and the anonymizer on `http://localhost:5001`.
 
 4. **Start the PHP development server**
 

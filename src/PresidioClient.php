@@ -6,45 +6,104 @@ use GuzzleHttp\Exception\GuzzleException;
 
 class PresidioClient
 {
-    private $client;
-    private $apiUrl;
-    private $apiKey;
+    private Client $analyzerClient;
+    private Client $anonymizerClient;
+    private ?string $analyzerKey;
+    private ?string $anonymizerKey;
 
-    public function __construct(string $apiUrl, ?string $apiKey = null)
-    {
-        $this->apiUrl = rtrim($apiUrl, '/');
-        $this->apiKey = $apiKey;
-        $this->client = new Client([
-            'base_uri' => $this->apiUrl,
+    public function __construct(
+        string $analyzerUrl,
+        string $anonymizerUrl,
+        ?string $analyzerKey = null,
+        ?string $anonymizerKey = null
+    ) {
+        $this->analyzerClient = new Client([
+            'base_uri' => rtrim($analyzerUrl, '/'),
             'timeout'  => 10,
         ]);
+        $this->anonymizerClient = new Client([
+            'base_uri' => rtrim($anonymizerUrl, '/'),
+            'timeout'  => 10,
+        ]);
+        $this->analyzerKey = $analyzerKey;
+        $this->anonymizerKey = $anonymizerKey;
     }
 
     /**
-     * Analyze and anonymize text using Presidio.
+     * Build HTTP headers for requests.
      *
-     * @param string $text Input text
-     * @param array $options Additional options like entities, score threshold
-     * @return string Anonymized text
-     * @throws GuzzleException
+     * @param string|null $key Optional API key to include as a Bearer token
+     * @return array
      */
-    public function anonymize(string $text, array $options = []): string
+    private function buildHeaders(?string $key): array
     {
         $headers = ['Content-Type' => 'application/json'];
-        if ($this->apiKey) {
-            $headers['Authorization'] = 'Bearer ' . $this->apiKey;
+        if ($key) {
+            $headers['Authorization'] = 'Bearer ' . $key;
         }
+        return $headers;
+    }
 
+    /**
+     * Call the Presidio analyzer and return the results array.
+     *
+     * @param string $text
+     * @param array $options Additional options like entities or score_threshold
+     * @return array
+     * @throws GuzzleException
+     */
+    public function analyze(string $text, array $options = []): array
+    {
         $body = array_merge([
             'text' => $text,
+            'language' => 'en',
         ], $options);
 
-        $response = $this->client->post('/analyze', [
-            'headers' => $headers,
-            'json' => $body,
+        $response = $this->analyzerClient->post('/analyze', [
+            'headers' => $this->buildHeaders($this->analyzerKey),
+            'json'    => $body,
+        ]);
+
+        return json_decode($response->getBody()->getContents(), true) ?? [];
+    }
+
+    /**
+     * Send analyzer results to the anonymizer service and return the anonymized text.
+     *
+     * @param string $text
+     * @param array $analyzerResults Results from the analyze() call
+     * @param array $anonymizers Optional anonymizer configuration
+     * @return string
+     * @throws GuzzleException
+     */
+    public function anonymize(string $text, array $analyzerResults, array $anonymizers = []): string
+    {
+        $body = [
+            'text' => $text,
+            'analyzer_results' => $analyzerResults,
+        ];
+        if (!empty($anonymizers)) {
+            $body['anonymizers'] = $anonymizers;
+        }
+
+        $response = $this->anonymizerClient->post('/anonymize', [
+            'headers' => $this->buildHeaders($this->anonymizerKey),
+            'json'    => $body,
         ]);
 
         $result = json_decode($response->getBody()->getContents(), true);
+        if (isset($result['text'])) {
+            return $result['text'];
+        }
         return $result['result'] ?? '';
+    }
+
+    /**
+     * Convenience method to analyze and immediately anonymize text.
+     */
+    public function analyzeAndAnonymize(string $text, array $options = []): string
+    {
+        $analysis = $this->analyze($text, $options);
+        return $this->anonymize($text, $analysis);
     }
 }
