@@ -64,14 +64,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <div class="col-md-6">
                 <div class="mb-3 position-relative">
                   <label class="form-label">Anonymized Output</label>
-                  <button type="button" id="copyOutput" class="btn btn-sm btn-outline-secondary position-absolute end-0 top-0 m-2" title="Copy">
+                  <button type="button" id="copyOutput" class="btn btn-sm btn-outline-secondary position-absolute start-0 top-0 m-2" title="Copy">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                       <rect x="8" y="8" width="12" height="12" rx="2" />
                       <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2" />
                     </svg>
                   </button>
-                  <textarea class="form-control resize-sync" rows="10" style="min-height:200px; resize:none; overflow:hidden;" readonly><?= htmlspecialchars($output) ?></textarea>
+                  <textarea class="form-control resize-sync" rows="10" style="min-height:200px; resize:vertical; overflow:hidden;" readonly><?= htmlspecialchars($output) ?></textarea>
                 </div>
               </div>
             </div>
@@ -120,15 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           el.addEventListener('input', () => autoResize(el));
         });
 
-        const initial = Math.max(inputArea.scrollHeight, outputArea.scrollHeight);
-        inputArea.style.height = outputArea.style.height = initial + 'px';
-
-        const ro = new ResizeObserver(entries => {
-          for (const entry of entries) {
-            outputArea.style.height = entry.contentRect.height + 'px';
-          }
-        });
-        ro.observe(inputArea);
 
         if (copyBtn) {
           copyBtn.addEventListener('click', () => {
