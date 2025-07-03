@@ -58,13 +58,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <div class="col-md-6">
                 <div class="mb-3">
                   <label class="form-label">Input Text</label>
-                  <textarea name="input_text" class="form-control" rows="10" style="min-height:200px;"><?= htmlspecialchars($input) ?></textarea>
+                  <textarea name="input_text" class="form-control resize-sync" rows="10" style="min-height:200px; resize:vertical; overflow:hidden;"><?= htmlspecialchars($input) ?></textarea>
                 </div>
               </div>
               <div class="col-md-6">
-                <div class="mb-3">
+                <div class="mb-3 position-relative">
                   <label class="form-label">Anonymized Output</label>
-                  <textarea class="form-control" rows="10" style="min-height:200px;" readonly><?= htmlspecialchars($output) ?></textarea>
+                  <button type="button" id="copyOutput" class="btn btn-sm btn-outline-secondary position-absolute start-0 top-0 m-2" title="Copy">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                      <rect x="8" y="8" width="12" height="12" rx="2" />
+                      <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2" />
+                    </svg>
+                  </button>
+                  <textarea class="form-control resize-sync" rows="10" style="min-height:200px; resize:vertical; overflow:hidden;" readonly><?= htmlspecialchars($output) ?></textarea>
                 </div>
               </div>
             </div>
@@ -97,5 +104,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
       </footer>
     </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const inputArea = document.querySelector('textarea[name="input_text"]');
+        const outputArea = document.querySelector('textarea[readonly]');
+        const copyBtn = document.getElementById('copyOutput');
+
+        function autoResize(el) {
+          el.style.height = 'auto';
+          el.style.height = el.scrollHeight + 'px';
+        }
+
+        [inputArea, outputArea].forEach(el => {
+          autoResize(el);
+          el.addEventListener('input', () => autoResize(el));
+        });
+
+        const ro = new ResizeObserver(entries => {
+          for (const entry of entries) {
+            const h = entry.contentRect.height + 'px';
+            if (entry.target === inputArea) {
+              outputArea.style.height = h;
+            } else {
+              inputArea.style.height = h;
+            }
+          }
+        });
+        ro.observe(inputArea);
+        ro.observe(outputArea);
+
+        if (copyBtn) {
+          copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(outputArea.value || '');
+          });
+        }
+      });
+    </script>
   </body>
 </html>
