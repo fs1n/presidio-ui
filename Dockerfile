@@ -24,7 +24,7 @@ COPY src ./src
 COPY presidio-api-docs.yml ./
 
 # Setup nginx configuration template
-RUN mkdir -p /etc/nginx/templates /run/nginx
+RUN mkdir -p /etc/nginx/templates /etc/nginx/conf.d /run/nginx
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/default.conf.template /etc/nginx/templates/default.conf.template
 
@@ -35,9 +35,7 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 # Default environment variables
 ENV PORT=8080 \
     PRESIDIO_ANALYZER_API_URL=http://localhost:5002 \
-    PRESIDIO_ANALYZER_API_KEY= \
-    PRESIDIO_ANONYMIZER_API_URL=http://localhost:5001 \
-    PRESIDIO_ANONYMIZER_API_KEY=
+    PRESIDIO_ANONYMIZER_API_URL=http://localhost:5001
 
 EXPOSE ${PORT}
 
