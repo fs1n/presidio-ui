@@ -1,22 +1,23 @@
 # syntax=docker/dockerfile:1
-FROM php:8.1-fpm-alpine AS base
 
+### Build stage to install PHP dependencies
+FROM composer:2 AS build
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --prefer-dist --no-progress --no-suggest
+
+### Runtime image
+FROM php:8.1-fpm-alpine
 LABEL maintainer="Presidio UI"
 
-# Install system packages
-RUN apk add --no-cache nginx curl bash
-
-# Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+# Install runtime packages, including envsubst from gettext
+RUN apk add --no-cache nginx curl bash gettext
 
 WORKDIR /app
 
-# Copy dependency definitions
+# Copy PHP dependencies from the build stage
+COPY --from=build /app/vendor ./vendor
 COPY composer.json composer.lock ./
-
-# Install PHP dependencies
-RUN composer install --no-dev --prefer-dist --no-progress --no-suggest \
-    && rm -rf /root/.composer
 
 # Copy application code
 COPY public ./public
