@@ -24,14 +24,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Format repo slug
-        run: echo "repo=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+      # Ensure repo slug is always lowercase and export as env var
+      - name: Set lowercased repo slug
+        run: echo "REPO_SLUG=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      # Compose tags for Docker (always lowercase)
+      - name: Set Docker tags
+        run: |
+          echo "TAGS=ghcr.io/${REPO_SLUG}:${{ github.ref_name }},ghcr.io/${REPO_SLUG}:latest" >> $GITHUB_ENV
 
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.ref_name }}
-            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
+          tags: ${{ env.TAGS }}
