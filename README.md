@@ -82,10 +82,6 @@ docker buildx build --platform linux/amd64,linux/arm64 \
 
 Paste text into the left area, adjust settings if desired and click **Anonymize**. The right area will display Presidio’s anonymized output.
 
-## Notes
-
-This code is intended as a simple starting point. Extend the `PresidioClient` class and the front‑end form to expose additional Presidio capabilities as needed.
-
 ## Disclaimer
 
 The anonymization features in this UI leverage components from the [Microsoft Presidio](https://github.com/microsoft/presidio/) project. These components are included for convenience and are not affiliated with or endorsed by this repository's maintainer. You are solely responsible for verifying that all sensitive information has been removed from your text. The maintainer accepts no liability for any errors in the anonymization process or for any resulting damages.
