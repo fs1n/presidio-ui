@@ -41,14 +41,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Presidio Anonymizer</title>
+    <title>Presidio Anonymizer UI</title>
     <link href="https://unpkg.com/@tabler/core@1.0.0-beta19/dist/css/tabler.min.css" rel="stylesheet"/>
     <script src="https://unpkg.com/@tabler/core@1.0.0-beta19/dist/js/tabler.min.js"></script>
   </head>
   <body>
     <div class="page">
       <div class="page-body container-xl">
-        <h2 class="mt-4">Presidio Anonymizer</h2>
+        <h2 class="mt-4">Presidio Anonymizer UI</h2>
         <?php if ($error): ?>
           <div class="alert alert-danger"> <?= htmlspecialchars($error) ?> </div>
         <?php endif; ?>
