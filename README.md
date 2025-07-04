@@ -2,6 +2,8 @@
 
 This repository provides a minimal PHP web interface for text anonymization using [Microsoft Presidio](https://microsoft.github.io/presidio/). The application uses the [Tabler](https://tabler.io/) UI kit for styling.
 
+[![Build and publish Docker image](https://github.com/fs1n/Presidio-UI/actions/workflows/publish.yml/badge.svg)](https://github.com/fs1n/Presidio-UI/actions/workflows/publish.yml)
+
 ## Features
 
 - Side‑by‑side text areas for input and anonymized output
