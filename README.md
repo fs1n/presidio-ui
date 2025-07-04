@@ -20,10 +20,12 @@ start them using Docker:
 # Download Docker images for presidio
 docker pull mcr.microsoft.com/presidio-analyzer
 docker pull mcr.microsoft.com/presidio-anonymizer
+docker pull mcr.microsoft.com/presidio-image-redactor
 
 # Run containers with default ports
 docker run -d -p 5002:3000 mcr.microsoft.com/presidio-analyzer:latest
 docker run -d -p 5001:3000 mcr.microsoft.com/presidio-anonymizer:latest
+docker run -d -p 5003:3000 mcr.microsoft.com/presidio-image-redactor
 ```
 
 ### Docker `run`
