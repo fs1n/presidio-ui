@@ -1,13 +1,13 @@
 # Presidio UI
 
-This repository provides a minimal PHP web interface for text anonymization using [Microsoft Presidio](https://microsoft.github.io/presidio/). The application uses the [Tabler](https://tabler.io/) UI kit for styling and communicates with a Presidio REST API.
+This repository provides a minimal PHP web interface for text anonymization using [Microsoft Presidio](https://microsoft.github.io/presidio/). The application uses the [Tabler](https://tabler.io/) UI kit for styling.
 
 ## Features
 
 - Side‑by‑side text areas for input and anonymized output
 - Optional advanced settings panel to pass entity types and score threshold
 - Configurable Presidio Analyzer and Anonymizer endpoints via `.env`
-- Basic error handling and clean code structure
+- Basic error handling
 
 ## Quick Start
 
@@ -15,11 +15,13 @@ The UI requires running Presidio's analyzer and anonymizer services. You can
 start them using Docker:
 
 ```bash
+# Download Docker images for presidio
 docker pull mcr.microsoft.com/presidio-analyzer
 docker pull mcr.microsoft.com/presidio-anonymizer
 
-docker run -p 5002:5002 ghcr.io/microsoft/presidio-analyzer:latest
-docker run -p 5001:5001 ghcr.io/microsoft/presidio-anonymizer:latest
+# Run containers with default ports
+docker run -d -p 5002:3000 mcr.microsoft.com/presidio-analyzer:latest
+docker run -d -p 5001:3000 mcr.microsoft.com/presidio-anonymizer:latest
 ```
 
 ### Docker `run`
