@@ -22,7 +22,6 @@ COPY composer.json composer.lock ./
 # Copy application code
 COPY public ./public
 COPY src ./src
-COPY presidio-api-docs.yml ./
 
 # Setup nginx configuration template
 RUN mkdir -p /etc/nginx/templates /etc/nginx/conf.d /run/nginx

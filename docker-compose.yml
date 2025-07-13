@@ -1,8 +1,8 @@
-version: '3.8'
 services:
   presidio-ui:
-    build: .
-    image: presidio-ui:latest
+#    build: . # only if you want to build the image from source
+#    image: presidio-ui:latest
+    image: ghcr.io/fs1n/presidio-ui:latest
     ports:
       - "${PORT:-8080}:8080"
     environment:
@@ -16,4 +16,30 @@ services:
       interval: 30s
       timeout: 5s
       start_period: 5s
+      retries: 3
+
+  presidio-analyzer:
+    image: mcr.microsoft.com/presidio-analyzer:latest
+    ports:
+      - "5002:5002"
+    environment:
+      - PORT=5002
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+
+  presidio-anonymizer:
+    image: mcr.microsoft.com/presidio-anonymizer:latest
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
       retries: 3
