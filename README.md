@@ -11,6 +11,9 @@ This repository provides a minimal PHP web interface for text anonymization usin
 - Configurable Presidio Analyzer and Anonymizer endpoints via `.env`
 - Basic error handling
 
+![Screenshot of the application UI - Data Fictional!!](https://github.com/user-attachments/assets/c2cd4d14-6735-4862-bb32-df3ba6aad24d)
+*Screenshot of the application UI - Data Fictional!!*
+
 ## Quick Start
 
 The UI requires running Presidio's analyzer and anonymizer services. You can
