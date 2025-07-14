@@ -10,6 +10,7 @@ This repository provides a minimal PHP web interface for text anonymization usin
 - Optional advanced settings panel to pass entity types and score threshold
 - Configurable Presidio Analyzer and Anonymizer endpoints via `.env`
 - Basic error handling
+- New *File PII* tab to anonymize uploaded documents
 
 ![Screenshot of the application UI - Data Fictional!!](https://github.com/user-attachments/assets/c2cd4d14-6735-4862-bb32-df3ba6aad24d)
 *Screenshot of the application UI - Data Fictional!!*
