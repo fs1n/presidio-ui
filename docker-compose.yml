@@ -2,6 +2,7 @@ services:
   presidio-ui:
 #    build: . # only if you want to build the image from source
 #    image: presidio-ui:latest
+    name: presidioui
     image: ghcr.io/fs1n/presidio-ui:latest
     ports:
       - "${PORT:-8080}:8080"
@@ -19,6 +20,7 @@ services:
       retries: 3
 
   presidio-analyzer:
+    name: analyzer
     image: mcr.microsoft.com/presidio-analyzer:latest
     ports:
       - "5002:5002"
@@ -32,6 +34,7 @@ services:
       retries: 3
 
   presidio-anonymizer:
+    name: anonymizer
     image: mcr.microsoft.com/presidio-anonymizer:latest
     ports:
       - "5001:5001"
