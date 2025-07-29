@@ -2,6 +2,7 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use App\PresidioClient;
+use App\EnhancedPresidioClient;
 use Dotenv\Dotenv;
 
 // Load environment variables
@@ -9,15 +10,41 @@ if (file_exists(__DIR__ . '/../.env')) {
     Dotenv::createImmutable(__DIR__ . '/../')->load();
 }
 
+// Backend configuration
+$backendUrl = $_ENV['PRESIDIO_BACKEND_URL'] ?? 'http://localhost:8000';
+$backendKey = $_ENV['PRESIDIO_BACKEND_API_KEY'] ?? null;
+$useNewBackend = ($_ENV['USE_NEW_BACKEND'] ?? 'true') === 'true';
+
+// Fallback configuration (original Presidio services)
 $analyzerUrl = $_ENV['PRESIDIO_ANALYZER_API_URL'] ?? 'http://localhost:5002';
 $anonymizerUrl = $_ENV['PRESIDIO_ANONYMIZER_API_URL'] ?? 'http://localhost:5001';
 $analyzerKey = $_ENV['PRESIDIO_ANALYZER_API_KEY'] ?? null;
 $anonymizerKey = $_ENV['PRESIDIO_ANONYMIZER_API_KEY'] ?? null;
-$client = new PresidioClient($analyzerUrl, $anonymizerUrl, $analyzerKey, $anonymizerKey);
+
+// Use enhanced client with fallback support
+$client = new EnhancedPresidioClient(
+    $backendUrl,
+    $backendKey,
+    $useNewBackend,
+    $analyzerUrl,
+    $anonymizerUrl,
+    $analyzerKey,
+    $anonymizerKey
+);
 
 $error = null;
 $output = '';
 $input = $_POST['input_text'] ?? '';
+$backendHealth = null;
+$useAdvanced = isset($_POST['use_advanced']) && $_POST['use_advanced'] === '1';
+
+// Get backend health information
+try {
+    $backendHealth = $client->getBackendHealth();
+} catch (Exception $e) {
+    // Health check failed, but continue with processing
+    $backendHealth = ['status' => 'unknown', 'error' => true];
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
@@ -30,7 +57,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST['score']) && is_numeric(trim($_POST['score']))) {
             $options['score_threshold'] = (float) trim($_POST['score']);
         }
-        $output = $client->analyzeAndAnonymize($input, $options);
+        
+        // Use advanced anonymization if requested and available
+        if ($useAdvanced && $client->isNewBackendAvailable()) {
+            $result = $client->advancedAnonymize($input, $options);
+            $output = $result['anonymized_text'] ?? '';
+            
+            // Store additional information for display
+            $advancedResults = $result;
+        } else {
+            $output = $client->analyzeAndAnonymize($input, $options);
+        }
     } catch (Exception $e) {
         $error = 'Error communicating with Presidio: ' . $e->getMessage();
     }

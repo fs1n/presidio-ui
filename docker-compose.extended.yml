@@ -1,0 +1,112 @@
+services:
+  # Original PHP frontend (existing)
+  presidio-ui-php:
+    image: ghcr.io/fs1n/presidio-ui:latest
+    ports:
+      - "${PHP_PORT:-8080}:8080"
+    environment:
+      PORT: 8080
+      # Configure to use Python backend when available
+      PRESIDIO_ANALYZER_API_URL: ${PRESIDIO_ANALYZER_API_URL:-http://presidio-backend:8000/api/v1}
+      PRESIDIO_ANALYZER_API_KEY: ${PRESIDIO_ANALYZER_API_KEY:-}
+      PRESIDIO_ANONYMIZER_API_URL: ${PRESIDIO_ANONYMIZER_API_URL:-http://presidio-backend:8000/api/v1}
+      PRESIDIO_ANONYMIZER_API_KEY: ${PRESIDIO_ANONYMIZER_API_KEY:-}
+    depends_on:
+      - presidio-backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    networks:
+      - presidio-network
+
+  # New Python FastAPI backend
+  presidio-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8000
+      DEBUG: ${DEBUG:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      
+      # Backend mode: 'local' uses built-in Presidio, 'external' uses external services
+      ANONYMIZATION_MODE: ${ANONYMIZATION_MODE:-local}
+      
+      # External Presidio services (fallback configuration)
+      PRESIDIO_ANALYZER_API_URL: ${EXTERNAL_ANALYZER_URL:-http://presidio-analyzer:5002}
+      PRESIDIO_ANONYMIZER_API_URL: ${EXTERNAL_ANONYMIZER_URL:-http://presidio-anonymizer:5001}
+      
+      # CORS configuration
+      ALLOWED_ORIGINS: http://localhost:8080,http://localhost:3000,http://127.0.0.1:8080
+      
+      # File handling
+      MAX_FILE_SIZE: ${MAX_FILE_SIZE:-10485760}
+      UPLOAD_DIR: /app/uploads
+      RESULTS_DIR: /app/results
+      
+      # OCR settings
+      TESSERACT_CMD: /usr/bin/tesseract
+      OCR_LANGUAGE: ${OCR_LANGUAGE:-eng}
+    volumes:
+      - backend-uploads:/app/uploads
+      - backend-results:/app/results
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+    networks:
+      - presidio-network
+
+  # External Presidio Analyzer (optional, for external mode)
+  presidio-analyzer:
+    image: mcr.microsoft.com/presidio-analyzer:latest
+    ports:
+      - "${ANALYZER_PORT:-5002}:5002"
+    environment:
+      - PORT=5002
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+    networks:
+      - presidio-network
+    profiles:
+      - external
+
+  # External Presidio Anonymizer (optional, for external mode)
+  presidio-anonymizer:
+    image: mcr.microsoft.com/presidio-anonymizer:latest
+    ports:
+      - "${ANONYMIZER_PORT:-5001}:5001"
+    environment:
+      - PORT=5001
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+    networks:
+      - presidio-network
+    profiles:
+      - external
+
+volumes:
+  backend-uploads:
+    driver: local
+  backend-results:
+    driver: local
+
+networks:
+  presidio-network:
+    driver: bridge
