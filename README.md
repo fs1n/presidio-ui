@@ -87,4 +87,4 @@ Paste text into the left area, adjust settings if desired and click **Anonymize*
 
 ## Disclaimer
 
-The anonymization features in this UI leverage components from the [Microsoft Presidio](https://github.com/microsoft/presidio/) project. These components are included for convenience and are not affiliated with or endorsed by this repository's maintainer. You are solely responsible for verifying that all sensitive information has been removed from your text. The maintainer accepts no liability for any errors in the anonymization process or for any resulting damages.
+The anonymization features in this UI leverage components from the [Microsoft Presidio](https://github.com/microsoft/presidio/) project. These components are included for convenience and are not affiliated with or endorsed by the repository's maintainer. You are solely responsible for verifying that all sensitive information has been removed from your text. The maintainer accepts no liability for any errors in the anonymization process or for any resulting damages.
