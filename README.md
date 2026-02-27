@@ -66,22 +66,6 @@ The container recognizes the following variables which can also be placed in a
 | `PRESIDIO_ANONYMIZER_API_URL` | `http://localhost:5001` | URL of the Presidio anonymizer service |
 | `PRESIDIO_ANONYMIZER_API_KEY` | *(empty)* | Optional API key for anonymizer |
 
-## Build Instructions
-
-Build the container for the current architecture:
-
-```bash
-docker build -t presidio-ui .
-```
-
-To create a multi-architecture image (e.g., `amd64` and `arm64`) use Docker
-Buildx:
-
-```bash
-docker buildx build --platform linux/amd64,linux/arm64 \
-  -t presidio-ui:latest .
-```
-
 ## Usage
 
 Paste text into the left area, adjust settings if desired and click **Anonymize**. The right area will display Presidio’s anonymized output.
